@@ -1,6 +1,6 @@
 # Restaurant Order Analytics Dashboard
 
-A full-stack analytics dashboard for restaurant order management with React frontend and Node.js backend.
+A full-stack analytics dashboard for restaurant order management with React frontend and PHP backend.
 
 ## Features
 
@@ -234,3 +234,4 @@ Check browser console (F12) for:
 
 
 **Note**: This is a demonstration project using mock data. For production use, integrate with a real database and add proper authentication/authorization.
+
