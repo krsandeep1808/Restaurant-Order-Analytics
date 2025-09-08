@@ -1,0 +1,59 @@
+.restaurant-list {
+  padding: 1rem;
+}
+
+.restaurant-list h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  font-size: 1.3rem;
+}
+
+.restaurant-list .filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.restaurant-list .filters input,
+.restaurant-list .filters select {
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.restaurant-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.restaurant-list li {
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.restaurant-list li:hover {
+  background-color: #e9ecef;
+}
+
+.restaurant-list li.selected {
+  background-color: #d4edda;
+  border-left: 4px solid #28a745;
+}
+
+.restaurant-list li h3 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.restaurant-list li p {
+  margin: 0 0 0.5rem 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+}

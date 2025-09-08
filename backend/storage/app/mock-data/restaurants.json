@@ -1,0 +1,30 @@
+[
+  {
+    "id": 101,
+    "name": "Tandoori Treats",
+    "location": "Bangalore",
+    "cuisine": "North Indian",
+    "rating": 4.5
+  },
+  {
+    "id": 102,
+    "name": "Sushi Bay", 
+    "location": "Mumbai",
+    "cuisine": "Japanese",
+    "rating": 4.2
+  },
+  {
+    "id": 103,
+    "name": "Pasta Palace",
+    "location": "Delhi", 
+    "cuisine": "Italian",
+    "rating": 4.8
+  },
+  {
+    "id": 104,
+    "name": "Burger Hub",
+    "location": "Hyderabad",
+    "cuisine": "American",
+    "rating": 4.0
+  }
+]
