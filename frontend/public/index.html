@@ -1,18 +1,824 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta
-      name="description"
-      content="Restaurant Analytics Dashboard"
-    />
-    <title>Restaurant Analytics</title>
-  </head>
-  <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Order Analytics</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+        
+        header {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .sidebar {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .main-content {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-section {
+            margin-bottom: 20px;
+        }
+        
+        .filter-section h3 {
+            margin-bottom: 10px;
+            color: #6a11cb;
+            font-size: 16px;
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .filter-options label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        
+        .restaurant-card {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f9f9f9;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .restaurant-card:hover, .restaurant-card.selected {
+            background: #eef7ff;
+            border-color: #2575fc;
+        }
+        
+        .restaurant-card h3 {
+            color: #6a11cb;
+            margin-bottom: 5px;
+        }
+        
+        .cuisine {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .rating {
+            color: #ff9800;
+            font-weight: bold;
+        }
+        
+        .date-range {
+            margin: 20px 0;
+        }
+        
+        .date-inputs {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .date-inputs input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .revenue-section {
+            background: #eef7ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .revenue-section h2 {
+            color: #6a11cb;
+            margin-bottom: 10px;
+        }
+        
+        .filter-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-form input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .apply-btn {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            grid-column: 1 / -1;
+        }
+        
+        .apply-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .orders-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .orders-table th, .orders-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .orders-table th {
+            background-color: #f0f4ff;
+            color: #6a11cb;
+            font-weight: 600;
+        }
+        
+        .orders-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        .no-orders {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .top-restaurants {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .top-restaurant-card {
+            flex: 1;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .top-restaurant-card h3 {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .revenue-amount {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .date-range-filter {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .date-range-filter h3 {
+            color: #6a11cb;
+            margin-right: 10px;
+            width: 100%;
+        }
+        
+        .date-range-filter label {
+            display: flex;
+            flex-direction: column;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .date-range-filter input {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-top: 5px;
+        }
+        
+        .date-range-filter button {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            align-self: flex-end;
+        }
+        
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-form {
+                grid-template-columns: 1fr;
+            }
+            
+            .date-range-filter {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Restaurant Order Analytics</h1>
+        </header>
+        
+        <aside class="sidebar">
+            <input type="text" class="search-box" placeholder="Search restaurants..." id="restaurant-search">
+            
+            <div class="filter-section">
+                <h3>Cuisine</h3>
+                <div class="filter-options" id="cuisine-filter">
+                    <label><input type="checkbox" name="cuisine" value="all" checked> All Cuisines</label>
+                    <label><input type="checkbox" name="cuisine" value="North Indian"> North Indian</label>
+                    <label><input type="checkbox" name="cuisine" value="Japanese"> Japanese</label>
+                    <label><input type="checkbox" name="cuisine" value="Italian"> Italian</label>
+                    <label><input type="checkbox" name="cuisine" value="American"> American</label>
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <h3>Location</h3>
+                <div class="filter-options" id="location-filter">
+                    <label><input type="checkbox" name="location" value="all" checked> All Locations</label>
+                    <label><input type="checkbox" name="location" value="Bangalore"> Bangalore</label>
+                    <label><input type="checkbox" name="location" value="Mumbai"> Mumbai</label>
+                    <label><input type="checkbox" name="location" value="Delhi"> Delhi</label>
+                    <label><input type="checkbox" name="location" value="Hyderabad"> Hyderabad</label>
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <h3>Rating</h3>
+                <div class="filter-options" id="rating-filter">
+                    <label><input type="checkbox" name="rating" value="all" checked> Any Rating</label>
+                    <label><input type="checkbox" name="rating" value="4.0"> 4.0+</label>
+                    <label><input type="checkbox" name="rating" value="4.5"> 4.5+</label>
+                </div>
+            </div>
+            
+            <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+            
+            <div class="restaurant-list">
+                <div class="restaurant-card" data-id="101" data-cuisine="North Indian" data-location="Bangalore" data-rating="4.5">
+                    <h3>Tandoori Treats</h3>
+                    <p class="cuisine">North Indian • Bangalore</p>
+                    <p class="rating">★★★★★ (4.5)</p>
+                </div>
+                
+                <div class="restaurant-card" data-id="102" data-cuisine="Japanese" data-location="Mumbai" data-rating="4.2">
+                    <h3>Sushi Bay</h3>
+                    <p class="cuisine">Japanese • Mumbai</p>
+                    <p class="rating">★★★★☆ (4.2)</p>
+                </div>
+                
+                <div class="restaurant-card" data-id="103" data-cuisine="Italian" data-location="Delhi" data-rating="4.8">
+                    <h3>Pasta Palace</h3>
+                    <p class="cuisine">Italian • Delhi</p>
+                    <p class="rating">★★★★★ (4.8)</p>
+                </div>
+                
+                <div class="restaurant-card" data-id="104" data-cuisine="American" data-location="Hyderabad" data-rating="4.0">
+                    <h3>Burger Hub</h3>
+                    <p class="cuisine">American • Hyderabad</p>
+                    <p class="rating">★★★★☆ (4.0)</p>
+                </div>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <div class="revenue-section">
+                <h2>Top 3 Restaurants by Revenue</h2>
+                <div class="top-restaurants">
+                    <div class="top-restaurant-card">
+                        <h3>Pasta Palace</h3>
+                        <p class="revenue-amount">₹24,568</p>
+                    </div>
+                    <div class="top-restaurant-card">
+                        <h3>Sushi Bay</h3>
+                        <p class="revenue-amount">₹22,145</p>
+                    </div>
+                    <div class="top-restaurant-card">
+                        <h3>Tandoori Treats</h3>
+                        <p class="revenue-amount">₹20,987</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="date-range-filter">
+                <h3>Date Range Filter</h3>
+                <label>
+                    Start Date:
+                    <input type="date" id="start-date" value="2025-06-22">
+                </label>
+                <label>
+                    End Date:
+                    <input type="date" id="end-date" value="2025-06-28">
+                </label>
+                <button id="apply-date-filter">Apply Filter</button>
+            </div>
+            
+            <h2>Filter Orders</h2>
+            <div class="filter-form">
+                <input type="number" id="restaurant-id" placeholder="Restaurant ID">
+                <input type="number" id="min-amount" placeholder="Min Amount" min="0">
+                <input type="number" id="max-amount" placeholder="Max Amount">
+                <input type="number" id="start-hour" placeholder="Start Hour (0-23)" min="0" max="23">
+                <input type="number" id="end-hour" placeholder="End Hour (0-23)" min="0" max="23">
+                <button class="apply-btn" id="apply-filters">Apply Filters</button>
+            </div>
+            
+            <table class="orders-table">
+                <thead>
+                    <tr>
+                        <th>Order Date</th>
+                        <th>Order Time</th>
+                        <th>Restaurant</th>
+                        <th>Amount (₹)</th>
+                    </tr>
+                </thead>
+                <tbody id="orders-body">
+                    <!-- Orders will be populated here -->
+                </tbody>
+            </table>
+            <div id="no-orders" class="no-orders">No orders found for the selected filters.</div>
+        </main>
+    </div>
+
+    <script>
+        // Sample data (from your JSON)
+        const orders = [
+            { id: 1, restaurant_id: 102, order_amount: 996, order_time: "2025-06-24T15:00:00" },
+            { id: 2, restaurant_id: 104, order_amount: 980, order_time: "2025-06-25T18:45:00" },
+            { id: 3, restaurant_id: 103, order_amount: 986, order_time: "2025-06-23T17:00:00" },
+            { id: 4, restaurant_id: 102, order_amount: 462, order_time: "2025-06-27T17:30:00" },
+            { id: 5, restaurant_id: 101, order_amount: 702, order_time: "2025-06-26T15:45:00" },
+            { id: 6, restaurant_id: 104, order_amount: 543, order_time: "2025-06-25T16:15:00" },
+            { id: 7, restaurant_id: 103, order_amount: 467, order_time: "2025-06-28T17:45:00" },
+            { id: 8, restaurant_id: 101, order_amount: 695, order_time: "2025-06-26T11:30:00" },
+            { id: 9, restaurant_id: 103, order_amount: 613, order_time: "2025-06-27T17:45:00" },
+            { id: 10, restaurant_id: 103, order_amount: 496, order_time: "2025-06-24T20:15:00" },
+            { id: 11, restaurant_id: 104, order_amount: 392, order_time: "2025-06-28T10:15:00" },
+            { id: 12, restaurant_id: 104, order_amount: 900, order_time: "2025-06-23T18:15:00" },
+            { id: 13, restaurant_id: 102, order_amount: 891, order_time: "2025-06-22T19:15:00" },
+            { id: 14, restaurant_id: 101, order_amount: 363, order_time: "2025-06-27T11:45:00" },
+            { id: 15, restaurant_id: 102, order_amount: 462, order_time: "2025-06-23T15:45:00" },
+            { id: 16, restaurant_id: 102, order_amount: 604, order_time: "2025-06-25T22:30:00" },
+            { id: 17, restaurant_id: 101, order_amount: 440, order_time: "2025-06-28T10:45:00" },
+            { id: 18, restaurant_id: 101, order_amount: 907, order_time: "2025-06-26T19:45:00" },
+            { id: 19, restaurant_id: 102, order_amount: 277, order_time: "2025-06-25T16:30:00" },
+            { id: 20, restaurant_id: 103, order_amount: 401, order_time: "2025-06-25T10:15:00" },
+            { id: 21, restaurant_id: 101, order_amount: 493, order_time: "2025-06-22T19:30:00" },
+            { id: 22, restaurant_id: 103, order_amount: 844, order_time: "2025-06-22T10:45:00" },
+            { id: 23, restaurant_id: 102, order_amount: 812, order_time: "2025-06-28T11:15:00" },
+            { id: 24, restaurant_id: 101, order_amount: 912, order_time: "2025-06-27T14:15:00" },
+            { id: 25, restaurant_id: 104, order_amount: 919, order_time: "2025-06-24T10:30:00" }
+        ];
+
+        const restaurants = [
+            { id: 101, name: "Tandoori Treats", location: "Bangalore", cuisine: "North Indian", rating: 4.5 },
+            { id: 102, name: "Sushi Bay", location: "Mumbai", cuisine: "Japanese", rating: 4.2 },
+            { id: 103, name: "Pasta Palace", location: "Delhi", cuisine: "Italian", rating: 4.8 },
+            { id: 104, name: "Burger Hub", location: "Hyderabad", cuisine: "American", rating: 4.0 }
+        ];
+
+        // DOM elements
+        const ordersBody = document.getElementById('orders-body');
+        const noOrdersMessage = document.getElementById('no-orders');
+        const applyFiltersBtn = document.getElementById('apply-filters');
+        const applyDateFilterBtn = document.getElementById('apply-date-filter');
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        const restaurantSearch = document.getElementById('restaurant-search');
+        const restaurantCards = document.querySelectorAll('.restaurant-card');
+        
+        // Filter state
+        let activeFilters = {
+            cuisine: [],
+            location: [],
+            rating: [],
+            restaurantId: null,
+            minAmount: null,
+            maxAmount: null,
+            startHour: null,
+            endHour: null,
+            startDate: new Date(startDateInput.value),
+            endDate: new Date(endDateInput.value)
+        };
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up event listeners for filters
+            setupFilterListeners();
+            
+            // Initial display of all orders
+            displayOrders(orders);
+            updateRevenueData(orders);
+        });
+
+        // Set up event listeners for all filters
+        function setupFilterListeners() {
+            // Apply filters button
+            applyFiltersBtn.addEventListener('click', filterOrders);
+            applyDateFilterBtn.addEventListener('click', filterOrders);
+            
+            // Cuisine filter
+            document.querySelectorAll('#cuisine-filter input').forEach(checkbox => {
+                checkbox.addEventListener('change', handleCuisineFilter);
+            });
+            
+            // Location filter
+            document.querySelectorAll('#location-filter input').forEach(checkbox => {
+                checkbox.addEventListener('change', handleLocationFilter);
+            });
+            
+            // Rating filter
+            document.querySelectorAll('#rating-filter input').forEach(checkbox => {
+                checkbox.addEventListener('change', handleRatingFilter);
+            });
+            
+            // Restaurant search
+            restaurantSearch.addEventListener('input', handleRestaurantSearch);
+            
+            // Restaurant card selection
+            restaurantCards.forEach(card => {
+                card.addEventListener('click', handleRestaurantSelection);
+            });
+        }
+
+        // Handle cuisine filter changes
+        function handleCuisineFilter(e) {
+            const value = e.target.value;
+            const checked = e.target.checked;
+            
+            if (value === 'all') {
+                // If "All Cuisines" is checked, uncheck others
+                if (checked) {
+                    document.querySelectorAll('#cuisine-filter input:not([value="all"])').forEach(cb => {
+                        cb.checked = false;
+                    });
+                    activeFilters.cuisine = [];
+                }
+            } else {
+                // If a specific cuisine is checked, uncheck "All Cuisines"
+                if (checked) {
+                    document.querySelector('#cuisine-filter input[value="all"]').checked = false;
+                    activeFilters.cuisine.push(value);
+                } else {
+                    activeFilters.cuisine = activeFilters.cuisine.filter(c => c !== value);
+                    
+                    // If no cuisines are selected, check "All Cuisines"
+                    if (activeFilters.cuisine.length === 0) {
+                        document.querySelector('#cuisine-filter input[value="all"]').checked = true;
+                    }
+                }
+            }
+            
+            filterOrders();
+        }
+
+        // Handle location filter changes
+        function handleLocationFilter(e) {
+            const value = e.target.value;
+            const checked = e.target.checked;
+            
+            if (value === 'all') {
+                // If "All Locations" is checked, uncheck others
+                if (checked) {
+                    document.querySelectorAll('#location-filter input:not([value="all"])').forEach(cb => {
+                        cb.checked = false;
+                    });
+                    activeFilters.location = [];
+                }
+            } else {
+                // If a specific location is checked, uncheck "All Locations"
+                if (checked) {
+                    document.querySelector('#location-filter input[value="all"]').checked = false;
+                    activeFilters.location.push(value);
+                } else {
+                    activeFilters.location = activeFilters.location.filter(l => l !== value);
+                    
+                    // If no locations are selected, check "All Locations"
+                    if (activeFilters.location.length === 0) {
+                        document.querySelector('#location-filter input[value="all"]').checked = true;
+                    }
+                }
+            }
+            
+            filterOrders();
+        }
+
+        // Handle rating filter changes
+        function handleRatingFilter(e) {
+            const value = e.target.value;
+            const checked = e.target.checked;
+            
+            if (value === 'all') {
+                // If "Any Rating" is checked, uncheck others
+                if (checked) {
+                    document.querySelectorAll('#rating-filter input:not([value="all"])').forEach(cb => {
+                        cb.checked = false;
+                    });
+                    activeFilters.rating = [];
+                }
+            } else {
+                // If a specific rating is checked, uncheck "Any Rating"
+                if (checked) {
+                    document.querySelector('#rating-filter input[value="all"]').checked = false;
+                    activeFilters.rating.push(parseFloat(value));
+                } else {
+                    activeFilters.rating = activeFilters.rating.filter(r => r !== parseFloat(value));
+                    
+                    // If no ratings are selected, check "Any Rating"
+                    if (activeFilters.rating.length === 0) {
+                        document.querySelector('#rating-filter input[value="all"]').checked = true;
+                    }
+                }
+            }
+            
+            filterOrders();
+        }
+
+        // Handle restaurant search
+        function handleRestaurantSearch(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            
+            restaurantCards.forEach(card => {
+                const name = card.querySelector('h3').textContent.toLowerCase();
+                const cuisine = card.querySelector('.cuisine').textContent.toLowerCase();
+                
+                if (name.includes(searchTerm) || cuisine.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Handle restaurant selection
+        function handleRestaurantSelection(e) {
+            const card = e.currentTarget;
+            const restaurantId = parseInt(card.getAttribute('data-id'));
+            
+            // Toggle selection
+            card.classList.toggle('selected');
+            
+            // Update restaurant ID filter
+            if (card.classList.contains('selected')) {
+                activeFilters.restaurantId = restaurantId;
+                
+                // Deselect other restaurants
+                restaurantCards.forEach(c => {
+                    if (c !== card) {
+                        c.classList.remove('selected');
+                    }
+                });
+            } else {
+                activeFilters.restaurantId = null;
+            }
+            
+            filterOrders();
+        }
+
+        // Format date and time from ISO string
+        function formatDateTime(isoString) {
+            const date = new Date(isoString);
+            return {
+                date: date.toLocaleDateString('en-IN'),
+                time: date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }),
+                dateObj: date
+            };
+        }
+
+        // Get restaurant name by ID
+        function getRestaurantName(id) {
+            const restaurant = restaurants.find(r => r.id === id);
+            return restaurant ? restaurant.name : `Unknown (ID: ${id})`;
+        }
+
+        // Get restaurant details by ID
+        function getRestaurantDetails(id) {
+            return restaurants.find(r => r.id === id) || null;
+        }
+
+        // Display orders in the table
+        function displayOrders(ordersToDisplay) {
+            ordersBody.innerHTML = '';
+            
+            if (ordersToDisplay.length === 0) {
+                noOrdersMessage.style.display = 'block';
+                return;
+            }
+            
+            noOrdersMessage.style.display = 'none';
+            
+            ordersToDisplay.forEach(order => {
+                const { date, time } = formatDateTime(order.order_time);
+                const restaurantName = getRestaurantName(order.restaurant_id);
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${date}</td>
+                    <td>${time}</td>
+                    <td>${restaurantName}</td>
+                    <td>₹${order.order_amount}</td>
+                `;
+                
+                ordersBody.appendChild(row);
+            });
+        }
+
+        // Filter orders based on criteria
+        function filterOrders() {
+            // Get filter values from inputs
+            activeFilters.restaurantId = document.getElementById('restaurant-id').value || null;
+            activeFilters.minAmount = document.getElementById('min-amount').value || null;
+            activeFilters.maxAmount = document.getElementById('max-amount').value || null;
+            activeFilters.startHour = document.getElementById('start-hour').value || null;
+            activeFilters.endHour = document.getElementById('end-hour').value || null;
+            activeFilters.startDate = new Date(startDateInput.value);
+            activeFilters.endDate = new Date(endDateInput.value);
+            
+            let filteredOrders = [...orders];
+            
+            // Apply restaurant ID filter
+            if (activeFilters.restaurantId) {
+                filteredOrders = filteredOrders.filter(order => 
+                    order.restaurant_id === parseInt(activeFilters.restaurantId)
+                );
+            }
+            
+            // Apply cuisine filter
+            if (activeFilters.cuisine.length > 0) {
+                filteredOrders = filteredOrders.filter(order => {
+                    const restaurant = getRestaurantDetails(order.restaurant_id);
+                    return restaurant && activeFilters.cuisine.includes(restaurant.cuisine);
+                });
+            }
+            
+            // Apply location filter
+            if (activeFilters.location.length > 0) {
+                filteredOrders = filteredOrders.filter(order => {
+                    const restaurant = getRestaurantDetails(order.restaurant_id);
+                    return restaurant && activeFilters.location.includes(restaurant.location);
+                });
+            }
+            
+            // Apply rating filter
+            if (activeFilters.rating.length > 0) {
+                filteredOrders = filteredOrders.filter(order => {
+                    const restaurant = getRestaurantDetails(order.restaurant_id);
+                    return restaurant && activeFilters.rating.some(r => restaurant.rating >= r);
+                });
+            }
+            
+            // Apply amount filters
+            if (activeFilters.minAmount) {
+                filteredOrders = filteredOrders.filter(order => 
+                    order.order_amount >= parseInt(activeFilters.minAmount)
+                );
+            }
+            
+            if (activeFilters.maxAmount) {
+                filteredOrders = filteredOrders.filter(order => 
+                    order.order_amount <= parseInt(activeFilters.maxAmount)
+                );
+            }
+            
+            // Apply time filters
+            if (activeFilters.startHour) {
+                filteredOrders = filteredOrders.filter(order => {
+                    const orderHour = new Date(order.order_time).getHours();
+                    return orderHour >= parseInt(activeFilters.startHour);
+                });
+            }
+            
+            if (activeFilters.endHour) {
+                filteredOrders = filteredOrders.filter(order => {
+                    const orderHour = new Date(order.order_time).getHours();
+                    return orderHour <= parseInt(activeFilters.endHour);
+                });
+            }
+            
+            // Apply date filter
+            filteredOrders = filteredOrders.filter(order => {
+                const orderDate = new Date(order.order_time);
+                return orderDate >= activeFilters.startDate && orderDate <= activeFilters.endDate;
+            });
+            
+            // Display filtered orders
+            displayOrders(filteredOrders);
+            
+            // Update revenue data based on filtered orders
+            updateRevenueData(filteredOrders);
+        }
+
+        // Update revenue data based on filtered orders
+        function updateRevenueData(filteredOrders) {
+            // Calculate revenue by restaurant
+            const revenueByRestaurant = {};
+            
+            filteredOrders.forEach(order => {
+                if (!revenueByRestaurant[order.restaurant_id]) {
+                    revenueByRestaurant[order.restaurant_id] = 0;
+                }
+                revenueByRestaurant[order.restaurant_id] += order.order_amount;
+            });
+            
+            // Convert to array and sort by revenue
+            const revenueArray = Object.entries(revenueByRestaurant)
+                .map(([id, revenue]) => ({ id: parseInt(id), revenue }))
+                .sort((a, b) => b.revenue - a.revenue);
+            
+            // Update top restaurants
+            const topRestaurants = document.querySelectorAll('.top-restaurant-card');
+            
+            for (let i = 0; i < Math.min(3, revenueArray.length); i++) {
+                const restaurant = restaurants.find(r => r.id === revenueArray[i].id);
+                if (restaurant) {
+                    topRestaurants[i].querySelector('h3').textContent = restaurant.name;
+                    topRestaurants[i].querySelector('.revenue-amount').textContent = `₹${revenueArray[i].revenue.toLocaleString('en-IN')}`;
+                    topRestaurants[i].style.display = 'block';
+                }
+            }
+            
+            // Hide extra cards if needed
+            for (let i = revenueArray.length; i < 3; i++) {
+                topRestaurants[i].style.display = 'none';
+            }
+        }
+    </script>
+</body>
 </html>
