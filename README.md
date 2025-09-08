@@ -230,17 +230,7 @@ Check browser console (F12) for:
 - Advanced visualization options
 - Mobile app version
 
-## License
-
-This project is created for educational/demonstration purposes.
-
-## Support
-
-For issues or questions, please check:
-1. Browser console for errors
-2. API endpoints directly at `http://localhost:8000/api/restaurants`
-3. Network connectivity between frontend and backend
-
 ---
+
 
 **Note**: This is a demonstration project using mock data. For production use, integrate with a real database and add proper authentication/authorization.
