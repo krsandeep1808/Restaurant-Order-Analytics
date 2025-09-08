@@ -2,6 +2,10 @@
 
 A full-stack analytics dashboard for restaurant order management with React frontend and PHP backend.
 
+## Screenshot
+### Project Screenshot:
+<img width="100%" height="auto"  src="Demo/Project Screenshot.PNG" />
+
 ## Features
 
 - **Restaurant Management**: View, search, and filter restaurants by cuisine, location, and rating
@@ -234,4 +238,5 @@ Check browser console (F12) for:
 
 
 **Note**: This is a demonstration project using mock data. For production use, integrate with a real database and add proper authentication/authorization.
+
 
